@@ -7,8 +7,10 @@ import asyncio
 from IPython.lib import backgroundjobs as bg
 
 from pymepix.channel.client import Client
-from pymepix.channel.channel_types import ChannelDataType, Commands
+from pymepix.channel.channel_types import ChannelDataType
 import pymepix.config.load_config as cfg
+
+_ASYNC_QUEUE_FULL_MAX_SIZE = 10
 
 
 _channel_address = tuple(cfg.default_cfg.get('tcp_channel', ['127.0.0.1', 5056]))
@@ -18,7 +20,7 @@ _data_queue = _client.get_queue()
 _jobs = bg.BackgroundJobManager()
 
 _DATA_FILTER = None
-_async_queue = asyncio.Queue(maxsize=4)
+_async_queue = asyncio.LifoQueue(maxsize=_ASYNC_QUEUE_FULL_MAX_SIZE)
 _event_loop = asyncio.get_event_loop()
 _callback_functions_set = set()
 
@@ -64,7 +66,13 @@ def _convert2df(data):
         data['data'] = pd.DataFrame(np.vstack(data['data']).T, columns = ['x', 'y', 'toa', 'tot'])
     return data
 
-    
+ 
+def put_in_queue_no_wait(data):
+    global _async_queue
+    try:
+        _async_queue.put_nowait(data)
+    except:
+        pass
 
 def _main_loop(data_filter=_DATA_FILTER):
     global _async_queue
@@ -72,15 +80,28 @@ def _main_loop(data_filter=_DATA_FILTER):
     global _data_queue
     global _recent_data
     
+    async_queue_half_size = int(_ASYNC_QUEUE_FULL_MAX_SIZE/2)
+    
+ 
     while True:
     
         data = _data_queue.get()
-        
+                
         #if DATA_FILTER is not None and data['type'] not in DATA_FILTER:
         #    continue
 
         data = _convert2df(data)
-        _event_loop.call_soon_threadsafe(_async_queue.put_nowait, data)
+        
+        if data['type'] != ChannelDataType.COMMAND.value:
+        
+            if _async_queue.qsize() <= async_queue_half_size:
+                #_event_loop.call_soon_threadsafe(_async_queue.put_nowait, data) # no exception handling
+                #_async_queue.put_nowait(data) #works but no notified waiting queue.get
+                _event_loop.call_soon_threadsafe(put_in_queue_no_wait, data)
+        else:
+            _event_loop.call_soon_threadsafe(_async_queue.put_nowait, data)
+            
+
 
         
         
