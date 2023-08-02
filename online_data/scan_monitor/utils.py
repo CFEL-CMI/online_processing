@@ -94,10 +94,10 @@ def runMacro(line):
 
     doorDev.runMacro(line.split(' '))
 
-    while doorDev.state() == PyTango.DevState.RUNNING:
+    while doorDev.state == PyTango.DevState.RUNNING:
         time.sleep(0.1)
 
-    if doorDev.state() != PyTango.DevState.ON:
+    if doorDev.state != PyTango.DevState.ON:
         raise ValueError(f"runMacro: Door state not ON, instead {doorDev.state()}")
 
     return True
