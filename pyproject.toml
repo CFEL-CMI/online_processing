@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "online_data"
+version = "0.1"
+readme = "Readme.md"
+license = {file = "LICENSE.md"}
+#long_description="Readme.md"
+classifiers=[
+   "Development Status :: Development",
+   "Environment :: Jupyter notebook",
+   "Intended Audience :: Developers/Users",
+   "Intended Audience :: Science/Research",
+   "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+   "Operating System :: MacOS :: MacOS X",
+   "Operating System :: Microsoft :: Windows",
+   "Operating System :: POSIX :: Linux",
+   "Operating System :: POSIX",
+   "Operating System :: Unix",
+   "Operating System :: OS Independent",
+   "Programming Language :: Python",
+   "Programming Language :: Python :: 3.8",
+   "Programming Language :: Python :: 3.9",
+   "Programming Language :: Python :: 3.10",
+   "Programming Language :: Python :: 3.11",
+   "Topic :: Scientific/Engineering",
+   "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    #'importlib-metadata; python_version<"3.8"',
+    "numpy >= 1.2",
+    "pyserial",
+    "pandas",
+    "joblib",
+    "sardana",
+    "taurus"
+]
+
+[project.urls]
+download_url="https://github.com/CFEL-CMI/online_processing"
+
+[metadata]
+author_email="cmidaq@cfel.de"
+maintainer="CFEL-CMI group"
+maintainer_email="cmidaq@cfel.de"
+description="Online processing library"
+
+
+[tool.setuptools.packages.find]
+exclude = ["tests", "doc"]
+
