@@ -27,7 +27,13 @@ class simpleDoor(sms.BaseDoor):
 
         if dataRecord != None:
 
-            records = self.recordData
+            try:
+                records = self.recordData
+            except Exception as e:
+                print(repr(e))
+                return
+
+
             # print(records)
             dec_format = records[0]
             codec = CodecFactory().getCodec(dec_format)
