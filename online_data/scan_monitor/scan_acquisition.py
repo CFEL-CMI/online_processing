@@ -1,6 +1,7 @@
 import asyncio
 import copy
 import sardana.taurus.core.tango.sardana.macroserver as sms
+from sardana.macroserver.scan.scandata import Record as SardanaRecord
 
 from .utils import *
 from .simple_door import simpleDoor
@@ -54,6 +55,14 @@ def get_formatted(data):
 
     recordData, records = data
 
+    # after counter macro we may get only one Record object on both recordData and records
+    if type(recordData[1]) == SardanaRecord:
+        res = ('', dict())
+        res[1]['type'] = 'record_single'
+        res[1]['records'] = records[1]
+        return res
+ 
+    # detect if we got only last records in recordData instead of scan info
     only_last_records = False
     if all([isinstance(it, int) for it in recordData[1].keys()]):  # got last records
         only_last_records = True
@@ -68,8 +77,6 @@ def get_formatted(data):
         _last_record_data = list(recordData[1].keys())
     else:
         _last_record_data = copy.copy(recordData[1])
-
-    # print('Here')
 
     if only_last_records:
         res = ('', dict())
