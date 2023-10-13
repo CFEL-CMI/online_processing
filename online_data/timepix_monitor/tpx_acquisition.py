@@ -131,7 +131,7 @@ def initialize_timepix_monitor():
 
     _ASYNC_QUEUE_FULL_MAX_SIZE = 10
 
-    _channel_address = tuple(cfg.default_cfg.get('tcp_channel', ['127.0.0.1', 5056]))
+    _channel_address = tuple(cfg.default_cfg.get('api_channel').values() if 'api_channel' in cfg.default_cfg.keys() else ['127.0.0.1', 5056])
 
     _client = Client(_channel_address, None, )
 
