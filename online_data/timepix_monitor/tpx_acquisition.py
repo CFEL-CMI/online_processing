@@ -148,3 +148,5 @@ def initialize_timepix_monitor():
     # _event_loop.call_soon_threadsafe(_from_queue2callback)
 
     _jobs.new(_main_loop)
+    
+    return _jobs

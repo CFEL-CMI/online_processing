@@ -180,3 +180,5 @@ def initialize_scan_monitor():
     _event_loop.create_task(_from_queue2callback())
 
     _jobs.new(_main_loop)
+    
+    return _jobs
